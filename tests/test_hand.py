@@ -113,15 +113,23 @@ def test_in_hand_cards_invalid(empty_hand:Hand,error):
     with pytest.raises(ValueError):
         empty_hand.in_hand_cards = error
 
-@pytest.mark.parametrize("value",[(10),(1000.9556),(1.0)])
+@pytest.mark.parametrize("value",[(10.0),(666.9556),(1.0)])
 def test_bet_correct(empty_hand:Hand,value):
-    empty_hand.bet = value
+    bet = (value,1000)
+    empty_hand.bet = bet
     assert empty_hand.bet == value
 
 @pytest.mark.parametrize("error",[("ERROR"),({}),(None),(-1),(0)])
 def test_bet_invalid(empty_hand:Hand,error):
+    bet = (error,100)
     with pytest.raises(ValueError):
-        empty_hand.bet = error
+        empty_hand.bet = bet
+
+@pytest.mark.parametrize("value",[(10),(50),(100)])
+def test_bet_not_enough_cash(empty_hand:Hand,value):
+    bet = (value,1)
+    with pytest.raises(ValueError):
+        empty_hand.bet = bet
 
 @pytest.mark.parametrize("error",[("ERROR"),({}),(None),(-1),(0)])
 def test_coefficient_invalid(empty_hand:Hand,error):

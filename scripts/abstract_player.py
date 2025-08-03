@@ -2,20 +2,24 @@ from abc import ABC,abstractmethod
 from .deck import Deck
 from .hand import Hand
 class AbstractPlayer(ABC):
-    def __init__(self,name:str="blank",cash = 0):
+    def __init__(self,name:str="blank",cash = 0,hands=None):
         super().__init__()
         self.name = name
         self.__cash = cash
-        self.hands:list[Hand] = []
-
+        if hands == None:
+            self.hands:list[Hand] = [Hand()]
+        else:
+            self.hands:list[Hand] = hands
     @property
     def cash(self):
         return self.__cash
     
     @cash.setter
     def cash(self,value):
-        if not (type(value) == int or type(value) == float):
+        if not (type(value) is int or type(value) is float):
             raise ValueError("Please, enter floats and integers for cash")
+        elif value <= 0:
+            raise ValueError("Cash value should be greater than zero")
         else:
             self.__cash = float(value)
 
@@ -24,15 +28,21 @@ class AbstractPlayer(ABC):
         pass
             
     def take_card(self,deck:Deck,hand:Hand,face_down = False)->None:
-        if drawn:= deck.draw_from_deck():
+        '''
+        draws card from chosen deck and appends to the hand\n
+        calculates points for the hand
+        '''
+        if len(self.hands)>1 and hand[0].rank == "Ace":
+            print("Only one draw possible after splitting aces")
+        elif drawn:= deck.draw_from_deck():
             drawn.face_down = face_down
             hand.append(drawn)
-        hand.points = hand.calculate_points()
+        hand.calculate_points()
         
-    def show_hand(self,hand)->None:
+    def show_hand(self,hand:Hand)->None:
         if not hand:
             print("Your hand is empty")
-        else:
+        elif not hand.is_dealers:
             print("==========")
             print(f"{self.name}'s current hand is:")
             for card in self.hand:
@@ -40,6 +50,11 @@ class AbstractPlayer(ABC):
                     print(f"    🃏This card is face down")
                 elif card.face_down ==False:
                     print(f"    🃏{card}")
+            print("==========")
+        elif hand.is_dealers:
+            print("Dealer's hand\n========")
+            for card in self.hand:
+                print(f"    🃏{card}")
             print("==========")
 
     def show_points(self,hand) -> None:

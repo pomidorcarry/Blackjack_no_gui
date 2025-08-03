@@ -9,27 +9,16 @@ class Player(AbstractPlayer):
         super().__init__(name, cash)
         
     def take_card(self, deck:Deck, hand:Hand, face_down=False):
+        '''
+        draws card from chosen deck and appends to the hand\n
+        calculates points for the hand\n
+        sets v_status for the hand\n
+        optionaly checks for a pair and sets 
+        '''
         super().take_card(deck, hand, face_down)
-        if len(hand) == 2:
-            self.check_pair()
-        self.set_v_status()
-
-    def check_pair(self,hand):
-        if hand[0].rank == hand[1].rank:
-            print("Pair spotted")
-            answer = input("Would you like to split your hand?\ny or n?\n")
-            if answer.lower() == "y":
-                self.split_hand()
-
-    def split_hand(self):
-        card1,card2 = self.hands[0][0],self.hands[0][1]
-        hand1 = Hand()
-        hand1.append(card1)
-        hand2 = Hand()
-        hand2.append(card2)
+        hand.set_v_status()  
         
-
-    def place_bet(self):
+    def place_bet(self,hand:Hand):
         print(f"{self.name} has got {self.cash}$")
         while True:
             try:
@@ -42,13 +31,15 @@ class Player(AbstractPlayer):
                 print("Please input only numbers in a specified format")
                 continue
             if bet_ > self.cash:
-                print(f"You only have {self.cash}$")
+                print(f"You only have {self.cash:.2f}$")
             else:
                 break
-        hand:Hand = self.hands[0]
         hand.bet = bet_
 
     def make_move(self,deck:Deck) -> None:
+        if len(self.hands) == 1:
+            if len(hand) == 2 and self.cash >= (hand.bet*2):
+                self.check_pair()
         for hand in self.hands:
             print(f"==========\n⭐ It's {self.name}'s turn ⭐")
             options = {
@@ -87,6 +78,27 @@ class Player(AbstractPlayer):
                     sys.exit()
                 else:
                     print("Only numbers from the list")
+
+    def check_pair(self,hand):
+        if hand[0].rank == hand[1].rank:
+            print("Pair spotted")
+            try:
+                answer = input("Would you like to split your hand?\ny or n?\n")
+            except KeyboardInterrupt:
+                return
+            if answer.lower() == "y":
+                self.split_hand()
+
+    def split_hand(self):
+        inital_bet = self.hands[0].bet
+        card1,card2 = self.hands[0][0],self.hands[0][1]
+        hand1 = Hand()
+        hand1.append(card1)
+        hand1.bet = inital_bet
+        hand2 = Hand()
+        hand2.append(card2)
+        hand2.bet = inital_bet
+        self.hands = [hand1,hand2]
 
     #we transform players victory status into their cash prize
     def calculate_prize(self)->float:

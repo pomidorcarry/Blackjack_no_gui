@@ -13,8 +13,9 @@ def main():
         game_0.show_bets()
         game_0.initial_deal()
         game_0.check_naturals()
+        #stopped here, find a way to play each hand
         for player in game_0.players:
-            print(player.coefficient)
+            print(player.hands[0].coefficient)
             if player.coefficient == None:
                 print(game_0.deck.deck_info())
                 game_0.show_hands()

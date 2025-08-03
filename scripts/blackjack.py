@@ -45,25 +45,54 @@ class BlackJack:
         else:
             self.__dealer = dealer
 
-    #I know for sure that player only has one hand at this point
     def place_bets(self)->None:
+        '''
+        each player in players places his bet\n
+        player only has one hand at this point!
+        '''
         for player in self.players:
-            player.place_bet()
+            player.place_bet(hand=player.hands[0])
 
-    #show players bets
     def show_bets(self)->None:
+        '''
+        shows players bets
+        '''
         print("---")
         for player in self.players:
             print(f"{player.name}'s bet is {player.bet} $")
         print("---")
 
-    #initially dealing the cards face up/down
     def initial_deal(self)->None:
+        '''
+        initially dealing cards to all players and the dealer\n
+        face up/down\n
+        right now only one hand is possible with 0 cards
+        '''
         for player in self.players:
             for _ in range(2):
-                player.take_card(self.deck,face_down=False)
+                player.take_card(self.deck,hand=player.hands[0],face_down=False)
         self.dealer.take_card(self.deck,face_down=True)
         self.dealer.take_card(self.deck,face_down=False)
+
+    def check_naturals(self)->None:
+        '''
+        only one hand is possible right now\n
+        checking if anyone won after the initial deal
+        '''
+        for player in self.players:
+            if self.dealer.hands[0].v_status != "NaturalBlackJack" and player.hands[0].v_status == "NaturalBlackJack":
+                player.hands[0].coefficient = 1.5
+            elif self.dealer.hands[0].v_status == "NaturalBlackJack" and player.hands[0].v_status == "NaturalBlackJack":
+                player.hands[0].coefficient = 0
+            elif player.hands[0].v_status != "NaturalBlackJack":
+                insurance = self.insurance(player)
+                if insurance and self.dealer.hands[0].v_status == "NaturalBlackJack":
+                    player.hands[0].coefficient = 0
+                elif insurance and self.dealer.hands[0].v_status != "NaturalBlackJack":
+                    player.cash -= insurance
+                    print(f"player {player.name} has lost their insurance {insurance}$!")
+                elif self.dealer.v_status == "NaturalBlackJack":
+                    player.hands[0].coefficient = -1
 
     def show_hands(self)->None:
         for player in self.players:
@@ -97,22 +126,6 @@ class BlackJack:
             self.dealer.hand = []
             return True
     
-    # checking if anyone won after the initial deal
-    def check_naturals(self)->None:
-        for player in self.players:
-            if self.dealer.v_status != "NaturalBlackJack" and player.v_status == "NaturalBlackJack":
-                player.coefficient = 1.5
-            elif self.dealer.v_status == "NaturalBlackJack" and player.v_status == "NaturalBlackJack":
-                player.coefficient = 0
-            elif player.v_status != "NaturalBlackJack":
-                insurance = self.insurance(player)
-                if insurance and self.dealer.v_status == "NaturalBlackJack":
-                    player.coefficient = 0
-                elif insurance and self.dealer.v_status != "NaturalBlackJack":
-                    player.cash -= insurance
-                    print(f"player {player.name} has lost their insurance {insurance}$!")
-                elif self.dealer.v_status == "NaturalBlackJack":
-                    player.coefficient = -1
     
     #check if anyone won
     def check_v_status(self):
@@ -156,5 +169,3 @@ class BlackJack:
             else:
                 print(f"Because {player.name} got {player.v_status}\n He lost {prize}!😭😭😭")
             print(f"{player.name} now got {player.cash}")
-
-

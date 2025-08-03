@@ -41,13 +41,20 @@ class Hand:
         return self.__bet
     
     @bet.setter
-    def bet(self,value:int|float):
-        if not (type(value) is int or type(value) is float):
+    def bet(self,bet:float):
+        # '''Takes a tuple
+        # first value is the bet, second is cash
+        # '''
+        # bet = value[0]
+        # cash = value[1]
+        if not (type(bet) is float):
+            raise ValueError("Only float values for this property")
+        elif not bet > 0:
             raise ValueError("Only int or float values for this property")
-        elif not value > 0:
-            raise ValueError("Only int or float values for this property")
+        # elif bet > cash:
+        #      raise ValueError(f"Player only has {cash:.2f}$")
         else:
-            self.__bet = value
+            self.__bet = bet
 
     @bet.deleter
     def bet(self):

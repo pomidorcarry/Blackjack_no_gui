@@ -5,27 +5,29 @@ from .hand import Hand
 class Dealer(AbstractPlayer):
     def __init__(self, name = "blank", cash=0):
         super().__init__(name, cash)
+        #remove hands atr
+        self.hands = [Hand(is_dealers=True)]
         self.__hand = Hand()
         self.__hand.is_dealers = True
 
-    @property
-    def true_points(self):
-        return self.__true_points
+    # @property
+    # def true_points(self):
+    #     return self.__true_points
     
-    @true_points.setter
-    def true_points(self,true_points:int):
-        self.__true_points = true_points
+    # @true_points.setter
+    # def true_points(self,true_points:int):
+    #     self.__true_points = true_points
 
     def take_card(self, deck, face_down=False):
         super().take_card(deck, face_down)
-        self.true_points = self.calculate_true_points(self.hand)
-        self.set_v_status()
+        self.true_points = self.hands[0].calculate_points()
+        self.hands[0].set_v_status()
 
-    def calculate_true_points(self,hand):
-        points = 0
-        for card in hand:
-            points += card.cost
-        return points
+    # def calculate_true_points(self,hand):
+    #     points = 0
+    #     for card in hand:
+    #         points += card.cost
+    #     return points
 
     def make_move(self,deck:Deck) -> None:
         self.moved = True
@@ -39,23 +41,18 @@ class Dealer(AbstractPlayer):
                 self.show_true_hand()
                 print(f"Dealer total points are {self.true_points}")
   
-    def show_true_hand(self):
-        print("Dealer's hand\n========")
-        for card in self.hand:
-            print(f"    🃏{card}")
-        print("==========")
 
-    def set_v_status(self):
-        if self.true_points > 21:
-            for card in self.hand:
-                if card.cost == 11:
-                    print("Soft hand spotted!")
-                    card.cost = 1
-                    print(f"{card.name} now costs 1 point")
-                    break
-            else:
-                self.v_status = "BUST"
-        elif self.true_points == 21 and len(self.hand) == 2:
-            self.v_status = "NaturalBlackJack"
-        else:
-            self.v_status = self.true_points
+    # def set_v_status(self):
+    #     if self.true_points > 21:
+    #         for card in self.hand:
+    #             if card.cost == 11:
+    #                 print("Soft hand spotted!")
+    #                 card.cost = 1
+    #                 print(f"{card.name} now costs 1 point")
+    #                 break
+    #         else:
+    #             self.v_status = "BUST"
+    #     elif self.true_points == 21 and len(self.hand) == 2:
+    #         self.v_status = "NaturalBlackJack"
+    #     else:
+    #         self.v_status = self.true_points

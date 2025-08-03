@@ -1,5 +1,6 @@
 import pytest
-import unittest.mock as mock
+import pytest_mock as mock
+
 
 from blackjack.scripts.hand import Hand
 from blackjack.scripts.card import Card
@@ -13,24 +14,90 @@ def empty_hand():
     return hand
 
 @pytest.fixture
-def hand_with_cards_0():
+def hand_with_cards_0()->dict:
     hand = Hand()
-    hand.in_hand_cards = [Card(suit="Spades",rank="Queen",cost=10)]
-    return hand
+    hand.in_hand_cards = []
+    hand_fix = {
+        "hand":hand,
+        "true_points_exp": 0,
+        "show_points_exp" : 0,
+        "v_status_exp" : 0,
+    }
+    return hand_fix 
 
 @pytest.fixture
-def hand_with_cards_1():
+def hand_with_cards_1()->dict:
     hand = Hand()
-    hand.in_hand_cards = [Card(suit="Spades",rank="Five",cost=5)]
-    points = 5
-    return hand
+    hand.in_hand_cards = [Card(suit="Spades",rank="Five",cost=5),Card(suit="Spades",rank="Ace",cost=11),Card(suit="Spades",rank="Queen",cost=10)]
+    hand_fix = {
+        "hand":hand,
+        "true_points_exp": 26,
+        "show_points_exp" : 26,
+        "v_status_exp" : 16,
+    }
+    return hand_fix 
 
-#hands with cards using parameters in a fixture
-@pytest.fixture(params=[(Hand(in_hand_cards=[Card(suit="Spades",rank="Queen",cost=10)]),10)])
-def hands_with_cards(request):
-    return request.param
+@pytest.fixture
+def hand_with_cards_2()->dict:
+    hand = Hand()
+    hand.in_hand_cards = [Card(suit="Hearts",rank="Two",cost=2),Card(suit="Spades",rank="Ace",cost=11),Card(suit="Spades",rank="Queen",cost=10)]
+    hand_fix = {
+        "hand":hand,
+        "true_points_exp": 23,
+        "show_points_exp" : 23,
+        "v_status_exp" : 13,
+    }
+    return hand_fix 
+
+@pytest.fixture
+def hand_with_cards_3()->dict:
+    hand = Hand()
+    hand.in_hand_cards = [Card(suit="Spades",rank="Queen",cost=10)]
+    hand_fix = {
+        "hand":hand,
+        "true_points_exp": 10,
+        "show_points_exp" : 10,
+        "v_status_exp" : 10,
+    }
+    return hand_fix 
+
+@pytest.fixture
+def hand_with_cards_4()->dict:
+    hand = Hand()
+    hand.in_hand_cards = [Card(suit="Spades",rank="Queen",cost=10),Card(suit="Spades",rank="Queen",cost=10,face_down=True),Card(suit="Spades",rank="Queen",cost=10,face_down=True)]
+    hand_fix = {
+        "hand":hand,
+        "true_points_exp": 30,
+        "show_points_exp" : 10,
+        "v_status_exp" : "BUST",
+    }
+    return hand_fix 
+
+@pytest.fixture
+def hand_with_cards_5()->dict:
+    hand = Hand()
+    hand.in_hand_cards = [Card(suit="Spades",rank="Ace",cost=11),Card(suit="Spades",rank="Queen",cost=10)]
+    hand_fix = {
+        "hand":hand,
+        "true_points_exp": 21,
+        "show_points_exp" : 21,
+        "v_status_exp" : "NaturalBlackJack",
+    }
+    return hand_fix 
+
+@pytest.fixture
+def hand_with_cards_6()->dict:
+    hand = Hand()
+    hand.in_hand_cards = [Card(suit="Spades",rank="Ace",cost=11),Card(suit="Spades",rank="Queen",cost=10,face_down=True)]
+    hand_fix = {
+        "hand":hand,
+        "true_points_exp": 21,
+        "show_points_exp" : 11,
+        "v_status_exp" : "NaturalBlackJack",
+    }
+    return hand_fix 
+
 ###fixtures
-
 
 @pytest.mark.parametrize("is_dealers",[(False,),(True,)])
 def test_init_correct(is_dealers):
@@ -66,8 +133,47 @@ def test_points_invalid(empty_hand:Hand,error):
     with pytest.raises(ValueError):
         empty_hand.coefficient = error
 
+@pytest.mark.parametrize("fixture_hand",[("hand_with_cards_0"),("hand_with_cards_1"),("hand_with_cards_2"),("hand_with_cards_3"),("hand_with_cards_4"),("hand_with_cards_5"),("hand_with_cards_6")])
+def test_calculate_points_returns_correct_amount(fixture_hand,request):
+    hand_whole = request.getfixturevalue(fixture_hand)
+    hand:Hand = hand_whole["hand"]
+    hand.calculate_points()
+    assert hand.show_points == hand_whole["show_points_exp"]
+    assert hand.true_points == hand_whole["true_points_exp"]
 
-@pytest.mark.parametrize("fixture_hand",[("hand_with_cards_0"),("hand_with_cards_1")])
-def test_calculate_points_correct_type(fixture_hand,request):
-    hand = request.getfixturevalue(fixture_hand)
-    assert isinstance(hand,Hand)
+
+@pytest.mark.parametrize("fixture_hand",[("hand_with_cards_0"),("hand_with_cards_1"),("hand_with_cards_2"),("hand_with_cards_3"),("hand_with_cards_4"),("hand_with_cards_5"),("hand_with_cards_6")])
+def test_calculate_points_property_called(fixture_hand,mocker,request):
+    mock_true = mocker.patch.object(Hand,"true_points",new_callable=mocker.PropertyMock)
+    mock_show = mocker.patch.object(Hand,"show_points",new_callable=mocker.PropertyMock)
+
+    hand_whole = request.getfixturevalue(fixture_hand)
+    hand:Hand = hand_whole["hand"]
+    hand.calculate_points()
+
+    mock_true.assert_called_once()
+    mock_show.assert_called_once()
+
+
+@pytest.mark.parametrize("value",[("BUST"),("NaturalBlackJack"),(10),(2),(0),(21),(24)])
+def test_v_status_correct(empty_hand:Hand,value):
+    empty_hand.v_status = value
+    assert empty_hand.v_status == value
+
+@pytest.mark.parametrize("value",[("ERROR"),("randomtest"),(-10),(-2),(-21),(-24),([]),(None)])
+def test_v_status_invalid(empty_hand:Hand,value):
+    with pytest.raises(ValueError):
+        empty_hand.v_status = value
+
+@pytest.mark.parametrize("fixture_hand",[("hand_with_cards_0"),("hand_with_cards_1"),("hand_with_cards_2"),("hand_with_cards_3"),("hand_with_cards_4"),("hand_with_cards_5")])
+def test_set_v_status_correct(fixture_hand,request):
+    hand_whole = request.getfixturevalue(fixture_hand)
+    hand:Hand = hand_whole["hand"]
+    hand.calculate_points()
+    hand.set_v_status()
+    assert hand.v_status == hand_whole["v_status_exp"]
+
+@pytest.mark.parametrize("value",[("ERROR"),("randomtest"),(-10),(-2),(-21),(-24),([]),(None)])
+def test_moved_invalid(empty_hand:Hand,value):
+    with pytest.raises(ValueError):
+        empty_hand.v_status = value

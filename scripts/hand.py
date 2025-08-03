@@ -10,6 +10,8 @@ class Hand:
         self.moved = False
         self.__v_status = None 
         self.__coefficient = None
+        self.__show_points = None
+        self.__true_points = None
 
     def append(self,value):
         self.__in_hand_cards.append(value)
@@ -27,7 +29,7 @@ class Hand:
     
     @in_hand_cards.setter
     def in_hand_cards(self,value):
-        if type(value) == list:
+        if type(value) is list:
             self.__in_hand_cards=value
         else:
             raise ValueError("Only list values for this property")
@@ -40,7 +42,7 @@ class Hand:
     
     @bet.setter
     def bet(self,value:int|float):
-        if not (type(value) == int or type(value) == float):
+        if not (type(value) is int or type(value) is float):
             raise ValueError("Only int or float values for this property")
         elif not value > 0:
             raise ValueError("Only int or float values for this property")
@@ -58,7 +60,7 @@ class Hand:
     
     @coefficient.setter
     def coefficient(self,value:float):
-        if not type(value) == float:
+        if not type(value) is float:
             raise ValueError("Not expected value error")
         if not value in [1.5,1.0,-1.0,0.0]:
             raise ValueError("Not expected value error")   
@@ -70,27 +72,42 @@ class Hand:
         del self.__coefficient
 ###coefficient
 ###points
+    #these points are public and for show
     @property
-    def points(self):
-        return self.__points
+    def show_points(self):
+        return self.__show_points
     
-    @points.setter
-    def points(self,points:int):
-        if not type(points) == int:  
+    @show_points.setter
+    def show_points(self,value:int):
+        if not type(value) is int:  
             raise ValueError("Only integers for this value")
         else:
-            self.__points = points    
+            self.__show_points = value
 
-    @points.deleter
-    def points(self):
-        del self.__points
+    #these points are used for calculations and checks
+    @property
+    def true_points(self):
+        return self.__true_points
+    
+    @true_points.setter
+    def true_points(self,value:int):
+        if not type(value) is int:  
+            raise ValueError("Only integers for this value")
+        else:
+            self.__true_points = value
 
-    def calculate_points(self)->int:
-        points = 0
+    def calculate_points(self)->None:
+        show_points = 0
+        true_points = 0
         for card in self.in_hand_cards:
-            if card.face_down == False:
-                points += card.cost
-        return points
+            if card.face_down:
+                true_points += card.cost
+            else:
+                true_points += card.cost
+                show_points += card.cost
+        self.true_points = true_points
+        self.show_points = show_points
+    
 ###points
 #v_statuts
     possible_v_statuses = [
@@ -104,29 +121,31 @@ class Hand:
     
     @v_status.setter
     def v_status(self,value):
-        if value in Hand.possible_v_statuses or type(value) == int:
+        if not (value in Hand.possible_v_statuses or type(value) is int):
+            raise ValueError("Only allowed v_statuses")
+        elif type(value) is int and value < 0: 
+            raise ValueError("Only allowed v_statuses")
+        else:
             self.__v_status = value
-        # else:
-        #     self.__v_status = None
-
-    @v_status.deleter
-    def v_status(self):
-        del self.__v_status
 
     def set_v_status(self)->None:
-        if self.points > 21:
-            for card in self.hand:
+        self.soft_hand_spot()
+        if self.true_points > 21:
+            self.v_status = "BUST"
+        elif self.true_points == 21 and len(self.in_hand_cards) == 2:
+            self.v_status = "NaturalBlackJack"
+        else:
+            self.v_status = self.true_points
+
+    def soft_hand_spot(self)->None:
+        if self.true_points > 21:
+            for card in self.in_hand_cards:
                 if card.cost == 11:
                     print("Soft hand spotted!")
                     card.cost = 1
                     print(f"{card.name} now costs 1 point")
+                    self.calculate_points()
                     break
-            else:
-                self.v_status = "BUST"
-        elif self.points == 21 and len(self.hand) == 2:
-            self.v_status = "NaturalBlackJack"
-        else:
-            self.v_status = self.points
 
 #v_statuts
 
@@ -135,6 +154,8 @@ class Hand:
         return self.__moved
     @moved.setter
     def moved(self,value:bool):
-        if type(value) == bool:
+        if type(value) is bool:
             self.__moved = value
+        else:
+            raise ValueError("Only boolean values")
     

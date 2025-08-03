@@ -90,7 +90,7 @@ class Card:
 
     def __eq__(self,other):
         if type(other)==Card:
-            return self.cost == other.cost
+            return self.rank == other.rank and self.suit == other.suit
         else:
             raise ValueError(f"{other} isn't a card object")
     

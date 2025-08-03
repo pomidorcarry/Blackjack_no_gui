@@ -39,12 +39,14 @@ def test_name_str_repr_property(my_card):
 
 
 def test_comparison():
-    card1 = Card(rank="Two",cost=2,suit="Hearts",face_down=False)
+    card1 = Card(rank="Two",cost=2,suit="Spades",face_down=False)
     card2 = Card(rank="Ace",cost=11,suit="Hearts",face_down=False)
     card3 = Card(rank="Two",cost=2,suit="Hearts",face_down=False)
+    card4 = Card(rank="Two",cost=20,suit="Hearts",face_down=False)
     assert card1 < card2
     assert card2 > card1
-    assert card1 == card3
+    assert not card1 == card3
+    assert card3 == card4
 
 
 def test_comparison_error():

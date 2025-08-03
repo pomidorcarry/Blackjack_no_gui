@@ -33,7 +33,10 @@ class Deck_classic_52(Deck):
 
     @in_deck_cards.setter
     def in_deck_cards(self,value):
-        self.__in_deck_cards = value
+        if type(value) is list:
+            self.__in_deck_cards = value
+        else:
+            raise ValueError("Only lists for this value")
 
     @property
     def in_deck_cards_total_num(self):
@@ -84,4 +87,4 @@ class Deck_classic_52(Deck):
             drawn = self.__in_deck_cards.pop(0)
             return drawn
         else:
-            print("No cards left to draw!")
+            raise ValueError("No cards left to draw!")

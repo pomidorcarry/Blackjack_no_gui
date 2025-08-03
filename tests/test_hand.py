@@ -6,8 +6,9 @@ from blackjack.scripts.card import Card
 from blackjack.scripts.deck import Deck_classic_52
 
 
+###fixtures
 @pytest.fixture
-def my_hand():
+def empty_hand():
     hand = Hand()
     return hand
 
@@ -18,10 +19,18 @@ def hand_with_cards_0():
     return hand
 
 @pytest.fixture
-def hand_with_cards_0():
+def hand_with_cards_1():
     hand = Hand()
-    hand.in_hand_cards = []
+    hand.in_hand_cards = [Card(suit="Spades",rank="Five",cost=5)]
+    points = 5
     return hand
+
+#hands with cards using parameters in a fixture
+@pytest.fixture(params=[(Hand(in_hand_cards=[Card(suit="Spades",rank="Queen",cost=10)]),10)])
+def hands_with_cards(request):
+    return request.param
+###fixtures
+
 
 @pytest.mark.parametrize("is_dealers",[(False,),(True,)])
 def test_init_correct(is_dealers):
@@ -33,30 +42,32 @@ def test_init_correct(is_dealers):
 ###properties
 
 @pytest.mark.parametrize("error",[("ERROR"),(0),(None)])
-def test_in_hand_cards_invalid(my_hand:Hand,error):
+def test_in_hand_cards_invalid(empty_hand:Hand,error):
     with pytest.raises(ValueError):
-        my_hand.in_hand_cards = error
+        empty_hand.in_hand_cards = error
 
 @pytest.mark.parametrize("value",[(10),(1000.9556),(1.0)])
-def test_bet_correct(my_hand:Hand,value):
-    my_hand.bet = value
-    assert my_hand.bet == value
+def test_bet_correct(empty_hand:Hand,value):
+    empty_hand.bet = value
+    assert empty_hand.bet == value
 
 @pytest.mark.parametrize("error",[("ERROR"),({}),(None),(-1),(0)])
-def test_bet_invalid(my_hand:Hand,error):
+def test_bet_invalid(empty_hand:Hand,error):
     with pytest.raises(ValueError):
-        my_hand.bet = error
+        empty_hand.bet = error
 
 @pytest.mark.parametrize("error",[("ERROR"),({}),(None),(-1),(0)])
-def test_coefficient_invalid(my_hand:Hand,error):
+def test_coefficient_invalid(empty_hand:Hand,error):
     with pytest.raises(ValueError):
-        my_hand.coefficient = error
+        empty_hand.coefficient = error
 
 @pytest.mark.parametrize("error",[("ERROR"),({}),(None),([]),(Deck_classic_52)])
-def test_points_invalid(my_hand:Hand,error):
+def test_points_invalid(empty_hand:Hand,error):
     with pytest.raises(ValueError):
-        my_hand.coefficient = error
+        empty_hand.coefficient = error
 
-@pytest.mark.parametrize("hand_",[(my_hand),(hand_with_cards_0)])
-def test_calculate_points_correct_type(hand_:Hand,request):
-    assert type(request.getfixturevalue(my_hand).calculate_points()) == int
+
+@pytest.mark.parametrize("fixture_hand",[("hand_with_cards_0"),("hand_with_cards_1")])
+def test_calculate_points_correct_type(fixture_hand,request):
+    hand = request.getfixturevalue(fixture_hand)
+    assert isinstance(hand,Hand)

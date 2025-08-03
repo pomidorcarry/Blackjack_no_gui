@@ -1,8 +1,11 @@
 from .card import Card
 
 class Hand:
-    def __init__(self,is_dealers=False):
-        self.in_hand_cards:list[Card] = []
+    def __init__(self,is_dealers=False,in_hand_cards=None):
+        if in_hand_cards is None:
+            self.in_hand_cards:list[Card] = []
+        else:
+            self.in_hand_cards:list[Card] =in_hand_cards
         self.is_dealers = is_dealers
         self.moved = False
         self.__v_status = None 

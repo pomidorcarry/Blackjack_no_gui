@@ -5,7 +5,13 @@ from .blackjack import BlackJack
 
 
 def main():
-    game_0 = BlackJack(players=[Player(name="Zakhar",cash=1000),],deck=Deck_classic_52(),dealer=Dealer(name="The Dealer"))
+    game_0 = BlackJack(
+        players=[
+            Player(name="Zakhar", cash=1000),
+        ],
+        deck=Deck_classic_52(),
+        dealer=Dealer(name="The Dealer"),
+    )
     while True:
         print("=+= The game has just begun =+=")
         game_0.deck.shuffle_deck()
@@ -19,7 +25,7 @@ def main():
                 print(c_hand.coefficient)
                 if c_hand.coefficient == None:
                     print(game_0.deck.deck_info())
-                    game_0.show_player_dealer_hands(player=c_player,hand=c_hand)
+                    game_0.show_player_dealer_hands(player=c_player, hand=c_hand)
                     c_player.make_move(game_0.deck)
 
         if game_0.dealer_should_play():
@@ -32,6 +38,7 @@ def main():
         else:
             print("Game over")
             return
+
 
 if __name__ == "__main__":
     main()

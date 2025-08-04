@@ -4,20 +4,21 @@ from .abstract_player import AbstractPlayer
 from .deck import Deck
 from .hand import Hand
 
+
 class Dealer(AbstractPlayer):
-    def __init__(self, name = "blank", cash=0):
+    def __init__(self, name="blank", cash=0):
         super().__init__(name, cash)
         self.hand = Hand(is_dealers=True)
         # self.__hand.is_dealers = True
 
-    def take_card(self,deck,face_down=False):
-        if drawn:= deck.draw_from_deck():
+    def take_card(self, deck, face_down=False):
+        if drawn := deck.draw_from_deck():
             drawn.face_down = face_down
             self.hand.append(drawn)
         self.hand.calculate_points()
         self.hand.set_v_status()
 
-    def make_move(self,deck:Deck) -> None:
+    def make_move(self, deck: Deck) -> None:
         self.moved = True
         print("And now let's see dealer's hand")
         print(f"total points are {self.hand.true_points}")

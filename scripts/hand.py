@@ -135,6 +135,7 @@ class Hand:
         else:
             self.__v_status = value
 
+
     def set_v_status(self)->None:
         self.soft_hand_spot()
         if self.true_points > 21:

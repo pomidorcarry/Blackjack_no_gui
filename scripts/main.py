@@ -12,25 +12,21 @@ def main():
         game_0.place_bets()
         game_0.show_bets()
         game_0.initial_deal()
-        game_0.check_naturals()
-        #stopped here, find a way to play each hand
-        for player in game_0.players:
-            print(player.hands[0].coefficient)
-            if player.coefficient == None:
-                print(game_0.deck.deck_info())
-                game_0.show_hands()
-                game_0.dealer.show_hand()
-                game_0.dealer.show_points()
-                player.make_move(game_0.deck)
-        #check if someone is still without a coefficient
-        for player in game_0.players:
-            if player.coefficient != None:
-                continue
-            else:
-                game_0.dealer.make_move(game_0.deck)
-                game_0.check_v_status()     
-                break
+        game_0.check_natural_black_jack()
+
+        for c_player in game_0.players:
+            for c_hand in c_player.hands:
+                print(c_hand.coefficient)
+                if c_hand.coefficient == None:
+                    print(game_0.deck.deck_info())
+                    game_0.show_player_dealer_hands(player=c_player,hand=c_hand)
+                    c_player.make_move(game_0.deck)
+
+        if game_0.dealer_should_play():
+            game_0.dealer.make_move(game_0.deck)
+        game_0.check_v_status()
         game_0.deal_with_winners()
+
         if game_0.reset():
             continue
         else:

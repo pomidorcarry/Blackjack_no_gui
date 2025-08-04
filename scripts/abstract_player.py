@@ -32,7 +32,10 @@ class AbstractPlayer(ABC):
         draws card from chosen deck and appends to the hand\n
         calculates points for the hand
         '''
-        if len(self.hands)>1 and hand[0].rank == "Ace":
+        if hand.v_status == "BUST":
+            print("Busted, you can't take any more cards")
+            return
+        elif len(self.hands)>1 and hand[0].rank == "Ace":
             print("Only one draw possible after splitting aces")
         elif drawn:= deck.draw_from_deck():
             drawn.face_down = face_down
@@ -42,25 +45,24 @@ class AbstractPlayer(ABC):
     def show_hand(self,hand:Hand)->None:
         if not hand:
             print("Your hand is empty")
-        elif not hand.is_dealers:
+        elif hand.is_dealers:
             print("==========")
-            print(f"{self.name}'s current hand is:")
-            for card in self.hand:
+            print("Dealer's hand\n========")
+            for card in hand:
                 if card.face_down == True:
                     print(f"    🃏This card is face down")
                 elif card.face_down ==False:
                     print(f"    🃏{card}")
             print("==========")
-        elif hand.is_dealers:
-            print("Dealer's hand\n========")
-            for card in self.hand:
+        else:
+            print(f"{self.name}'s current hand is:")
+            for card in hand:
                 print(f"    🃏{card}")
             print("==========")
 
-    def show_points(self,hand) -> None:
-        for card in hand:
-            if card.face_down == True:
-                print(f"{self.name}'s current points are {self.points} + X points")
-                return
-        print(f"{self.name}'s current points are {self.points}")
+    def show_points(self,hand:Hand) -> None:
+        if hand.is_dealers:
+            print(f"{self.name}'s current points are {hand.show_points} + X points")
+        else:
+            print(f"{self.name}'s current points are {hand.true_points}")
             

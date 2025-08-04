@@ -16,7 +16,8 @@ class Player(AbstractPlayer):
         optionaly checks for a pair and sets 
         '''
         super().take_card(deck, hand, face_down)
-        hand.set_v_status()  
+        hand.set_v_status()
+        print(f"{hand.v_status}")
         
     def place_bet(self,hand:Hand):
         print(f"{self.name} has got {self.cash}$")
@@ -38,8 +39,8 @@ class Player(AbstractPlayer):
 
     def make_move(self,deck:Deck) -> None:
         if len(self.hands) == 1:
-            if len(hand) == 2 and self.cash >= (hand.bet*2):
-                self.check_pair()
+            if len(self.hands[0]) == 2 and self.cash >= (self.hands[0].bet*2):
+                self.check_pair(self.hands[0])
         for hand in self.hands:
             print(f"==========\n⭐ It's {self.name}'s turn ⭐")
             options = {
@@ -49,7 +50,8 @@ class Player(AbstractPlayer):
                 0:"End the game"
             }
             self.moved = True
-
+            if len(hand) == 1:
+                self.take_card(deck,hand)
             while True:
                 for k,v in options.items():
                     print(k,v)
@@ -62,12 +64,13 @@ class Player(AbstractPlayer):
                     print("only integers")
                     return
                 if choice == 1:
-                    self.show_hand()
+                    self.show_hand(hand)
+                    self.show_points(hand)
                 elif choice == 2:
                     print("HIT!")
-                    self.take_card(deck)
+                    self.take_card(deck,hand)
                 elif choice == 3:
-                    if len(self.hand) == 2:
+                    if len(hand) == 2:
                         print(f"Player {self.name} chose to STAND")
                         break
                     else:
@@ -102,6 +105,7 @@ class Player(AbstractPlayer):
 
     #we transform players victory status into their cash prize
     def calculate_prize(self)->float:
-        prize =  self.bet * self.coefficient    
-        self.cash += prize
-        return prize
+        for hand in self.hands:
+            prize =  hand.bet * hand.coefficient    
+            self.cash += prize
+            return prize

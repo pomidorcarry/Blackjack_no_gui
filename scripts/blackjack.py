@@ -4,7 +4,7 @@ from .dealer import Dealer
 from .hand import Hand
 
 import sys
-
+import time
 
 class BlackJack:
     def __init__(self, players: list[Player], deck: Deck_classic_52, dealer: Dealer):
@@ -52,8 +52,7 @@ class BlackJack:
         player only has one hand at this point!
         """
         for player in self.players:
-            bet = player.get_bet()
-            player.hands[0].bet = bet 
+            player.place_bet(hand=player.hands[0])
 
     def show_bets(self) -> None:
         """
@@ -63,6 +62,7 @@ class BlackJack:
         for player in self.players:
             print(f"{player.name}'s bet is {player.hands[0].bet} $")
         print("---")
+        time.sleep(3)
 
     def initial_deal(self) -> None:
         """
@@ -115,8 +115,10 @@ class BlackJack:
         """
         player.show_hand(hand)
         player.show_points(hand)
+        time.sleep(2)
         self.dealer.show_hand(hand=self.dealer.hand)
         self.dealer.show_points(self.dealer.hand)
+        time.sleep(2)
 
     def show_cash(self) -> None:
         """
@@ -139,17 +141,18 @@ class BlackJack:
         check if dealer bust\n
         compare points
         """
-        print("cheking")
         if self.dealer.hand.v_status == "BUST":
             for player in self.players:
                 for hand in player.hands:
                     if not hand.coefficient:
                         hand.coefficient = 1.0
-        else:
-            # elif self.dealer.hand.v_status != "NaturalBlackJack":
+        # else:
+        elif self.dealer.hand.v_status != "NaturalBlackJack":
             for player in self.players:
                 for hand in player.hands:
-                    if hand.v_status == "BUST":
+                    if isinstance(hand.coefficient,float):
+                        return
+                    elif hand.v_status == "BUST":
                         hand.coefficient = -1.0
                     elif hand.v_status > 21:
                         hand.coefficient = -1.0

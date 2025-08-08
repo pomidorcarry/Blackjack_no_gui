@@ -3,6 +3,7 @@ from .player import Player
 from .dealer import Dealer
 from .blackjack import BlackJack
 
+import time
 
 def main():
     game_0 = BlackJack(
@@ -22,8 +23,8 @@ def main():
 
         for c_player in game_0.players:
             for c_hand in c_player.hands:
-                print(c_hand.coefficient)
                 if c_hand.coefficient == None:
+                    time.sleep(2)
                     print(game_0.deck.deck_info())
                     game_0.show_player_dealer_hands(player=c_player, hand=c_hand)
                     c_player.make_move(game_0.deck)
@@ -32,7 +33,7 @@ def main():
             game_0.dealer.make_move(game_0.deck)
         game_0.check_v_status()
         game_0.deal_with_winners()
-
+        time.sleep(3)
         if game_0.reset():
             continue
         else:

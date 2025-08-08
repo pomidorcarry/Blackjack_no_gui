@@ -18,7 +18,7 @@ class Player(AbstractPlayer):
         """
         super().take_card(deck, hand, face_down)
         hand.set_v_status()
-        print(f"{hand.v_status}")
+        # print(f"{hand.v_status}")
 
     def place_bet(self, hand: Hand):
         print(f"{self.name} has got {self.cash}$")
@@ -43,13 +43,15 @@ class Player(AbstractPlayer):
         hand.bet = bet_
 
     def make_move(self, deck: Deck) -> None:
-        self.check_pair()
+        double = 0
+        self.check_pair(deck)
         for hand in self.hands:
             print(f"==========\n⭐ It's {self.name}'s turn ⭐")
             options = {
                 1: "Show your hand",
                 2: "Take a card",
                 3: "End your turn",
+                4: "Double",
                 0: "End the game",
             }
             self.moved = True
@@ -70,22 +72,37 @@ class Player(AbstractPlayer):
                     self.show_hand(hand)
                     self.show_points(hand)
                 elif choice == 2:
-                    print("HIT!")
-                    self.take_card(deck, hand)
+                    if double ==2:
+                        print("Only one card after double")
+                    else:
+                        print("HIT!")
+                        self.take_card(deck, hand)
+                        if double == 1:
+                            double += 1
                 elif choice == 3:
                     if len(hand) == 2:
                         print(f"Player {self.name} chose to STAND")
+                        self.moved = True
                         break
                     else:
                         print(f"Player {self.name} has finished their turn")
+                        self.moved = True
                         break
+                elif choice == 4:
+                    if len(self.hands) == 1:
+                        bet = self.hands[0].bet
+                        self.hands[0].bet = bet * 2
+                        double = 1
+                        print(f"your bet is now {self.hands[0].bet}$")
+                    else:
+                        print("Can't make bet's with two hands")
                 elif choice == 0:
                     "Bye!"
                     sys.exit()
                 else:
                     print("Only numbers from the list")
 
-    def check_pair(self):
+    def check_pair(self,deck_):
         if len(self.hands) > 1:
             print("More than one hand")
             return
@@ -106,9 +123,9 @@ class Player(AbstractPlayer):
             except KeyboardInterrupt:
                 return
             if answer.lower() == "y":
-                self.split_hand()
+                self.split_hand(deck_)
 
-    def split_hand(self):
+    def split_hand(self,deck_):
         inital_bet = self.hands[0].bet
         card1, card2 = self.hands[0][0], self.hands[0][1]
         hand1 = Hand()
@@ -118,13 +135,17 @@ class Player(AbstractPlayer):
         hand2.append(card2)
         hand2.bet = inital_bet
         self.hands = [hand1, hand2]
-        self.take_card(self.hands[0])
-        self.take_card(self.hands[1])
+        self.take_card(deck=deck_,hand=self.hands[0])
+        self.take_card(deck=deck_,hand=self.hands[1])
 
 
     # we transform players victory status into their cash prize
     def calculate_prize(self) -> float:
         for hand in self.hands:
             prize = hand.bet * hand.coefficient
-            self.cash += prize
-            return prize
+            if self.cash + prize <= 0:
+                print(f"You balance is now {self.cash + prize <= 0}\nGame over")
+                sys.exit()
+            else:
+                self.cash += prize
+                return prize

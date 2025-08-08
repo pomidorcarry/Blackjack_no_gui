@@ -1,5 +1,5 @@
 import pytest
-import pytest_mock as mock
+import unittest.mock as mock
 
 
 from blackjack.scripts.hand import Hand
@@ -145,8 +145,7 @@ def test_in_hand_cards_invalid(empty_hand: Hand, error):
 
 @pytest.mark.parametrize("value", [(10.0), (666.9556), (1.0)])
 def test_bet_correct(empty_hand: Hand, value):
-    bet = (value, 1000)
-    empty_hand.bet = bet
+    empty_hand.bet = value
     assert empty_hand.bet == value
 
 
@@ -265,3 +264,28 @@ def test_set_v_status_correct(fixture_hand, request):
 def test_moved_invalid(empty_hand: Hand, value):
     with pytest.raises(ValueError):
         empty_hand.v_status = value
+
+@mock.patch("blackjack.scripts.hand.Hand.calculate_points")
+def test_soft_hand_spot_called_on_22(mocker):
+    hand = Hand(in_hand_cards=[Card(rank="Ace",suit="Hearts",cost=11),Card(rank="King",suit="Hearts",cost=10)])
+    hand.true_points = 22
+    hand.soft_hand_spot()
+    mocker.assert_called_once()
+
+def test_soft_hand_spot_reduces_cost_one_ace():
+    hand = Hand(in_hand_cards=[Card(rank="Ace",suit="Hearts",cost=11),Card(rank="King",suit="Hearts",cost=10),Card(rank="King",suit="Hearts",cost=10)])
+    hand.calculate_points()
+    assert hand.true_points == 31
+    hand.soft_hand_spot()
+    ace = hand.in_hand_cards[0]
+    assert ace.cost == 1
+
+def test_soft_hand_spot_reduces_cost_two_aces():
+    hand = Hand(in_hand_cards=[Card(rank="Ace",suit="Hearts",cost=11),Card(rank="Ace",suit="Spades",cost=11),Card(rank="King",suit="Hearts",cost=10),Card(rank="King",suit="Hearts",cost=10)])
+    hand.calculate_points()
+    assert hand.true_points == 42
+    hand.soft_hand_spot()
+    ace_1 = hand.in_hand_cards[0]
+    assert ace_1.cost == 1
+    ace_2 = hand.in_hand_cards[1]
+    assert ace_2.cost == 1

@@ -30,10 +30,10 @@ class Player(AbstractPlayer):
                     )
                 )
             except KeyboardInterrupt:
-                bet_ = 0.0
-                print("Bet placed as 0 dollars 0 cents")
+                bet_ = 1.0
+                print(f"Bet placed as {bet_}")
                 break
-            except ValueError:
+            except (ValueError,TypeError):
                 print("Please input only numbers in a specified format")
                 continue
             if bet_ > self.cash:
@@ -43,9 +43,7 @@ class Player(AbstractPlayer):
         hand.bet = bet_
 
     def make_move(self, deck: Deck) -> None:
-        if len(self.hands) == 1:
-            if len(self.hands[0]) == 2 and self.cash >= (self.hands[0].bet * 2):
-                self.check_pair(self.hands[0])
+        self.check_pair()
         for hand in self.hands:
             print(f"==========\n⭐ It's {self.name}'s turn ⭐")
             options = {
@@ -87,8 +85,21 @@ class Player(AbstractPlayer):
                 else:
                     print("Only numbers from the list")
 
-    def check_pair(self, hand):
-        if hand[0].rank == hand[1].rank:
+    def check_pair(self):
+        if len(self.hands) > 1:
+            print("More than one hand")
+            return
+        #to ensure that there are no aces in a pair
+        elif not len(self.hands[0]) == 2:
+            print("Splitting is only possible for two cards")
+            return                  
+        elif self.hands[0].true_points >= 22:
+            print("More than 22 points")
+            return
+        elif not self.cash >= (self.hands[0].bet * 2):
+            print("Not enough cash for a pair")
+            return
+        elif self.hands[0][0].rank == self.hands[0][1].rank:
             print("Pair spotted")
             try:
                 answer = input("Would you like to split your hand?\ny or n?\n")
@@ -107,6 +118,9 @@ class Player(AbstractPlayer):
         hand2.append(card2)
         hand2.bet = inital_bet
         self.hands = [hand1, hand2]
+        self.take_card(self.hands[0])
+        self.take_card(self.hands[1])
+
 
     # we transform players victory status into their cash prize
     def calculate_prize(self) -> float:

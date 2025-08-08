@@ -24,29 +24,29 @@ def test_cash_invalid(player_0, value):
 
 
 @mock.patch("blackjack.scripts.deck.Deck_classic_52.draw_from_deck")
-def test_take_card_calls_draw_from_deck(mocker, player_0: abs):
+def test_take_card_calls_draw_from_deck(mok, player_0: abs):
     mock_card = mock.MagicMock()
     mock_card.cost = 10
     mock_card.name = "Ten of Hearts"
     mock_card.face_down = False
-    mocker.return_value = mock_card
+    mok.return_value = mock_card
     deck = dck()
     player_0.take_card(deck, hand=player_0.hands[0])
-    mocker.assert_called_once()
+    mok.assert_called_once()
 
 
 @mock.patch("blackjack.scripts.hand.Hand.append")
-def test_take_card_calls_append(mocker, player_0: abs):
+def test_take_card_calls_append(mok, player_0: abs):
     deck = dck()
     player_0.take_card(deck, hand=player_0.hands[0])
-    mocker.assert_called_once()
+    mok.assert_called_once()
 
 
 @mock.patch("blackjack.scripts.hand.Hand.calculate_points")
-def test_take_card_calls_calculate_points(mocker, player_0: abs):
+def test_take_card_calls_calculate_points(mok, player_0: abs):
     deck = dck()
     player_0.take_card(deck, hand=player_0.hands[0])
-    mocker.assert_called_once()
+    mok.assert_called_once()
 
 
 def test_take_card_grows_hand(player_0: abs):

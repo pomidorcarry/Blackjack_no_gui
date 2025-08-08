@@ -52,7 +52,8 @@ class BlackJack:
         player only has one hand at this point!
         """
         for player in self.players:
-            player.place_bet(hand=player.hands[0])
+            bet = player.get_bet()
+            player.hands[0].bet = bet 
 
     def show_bets(self) -> None:
         """

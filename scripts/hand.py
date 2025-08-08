@@ -23,7 +23,11 @@ class Hand:
     def __len__(self):
         return len(self.__in_hand_cards)
 
-    ###in_hand_cards
+    def __repr__(self):
+        return f"Hand({self.in_hand_cards})"
+    
+    
+
     @property
     def in_hand_cards(self):
         return self.__in_hand_cards
@@ -35,26 +39,16 @@ class Hand:
         else:
             raise ValueError("Only list values for this property")
 
-    ###in_hand_cards
-
-    ###bet
     @property
     def bet(self):
         return self.__bet
 
     @bet.setter
     def bet(self, bet: float):
-        # '''Takes a tuple
-        # first value is the bet, second is cash
-        # '''
-        # bet = value[0]
-        # cash = value[1]
-        if not (type(bet) is float):
+        if not isinstance(bet,float):
             raise ValueError("Only float values for this property")
         elif not bet > 0:
-            raise ValueError("Only int or float values for this property")
-        # elif bet > cash:
-        #      raise ValueError(f"Player only has {cash:.2f}$")
+            raise ValueError("Value should be greater than zero")
         else:
             self.__bet = bet
 
@@ -62,8 +56,6 @@ class Hand:
     def bet(self):
         del self.__bet
 
-    ###bet
-    ###coefficient
     @property
     def coefficient(self):
         return self.__coefficient
@@ -81,11 +73,11 @@ class Hand:
     def coefficient(self):
         del self.__coefficient
 
-    ###coefficient
-    ###points
-    # these points are public and for show
     @property
     def show_points(self):
+        '''
+        these points are public and for show
+        '''
         return self.__show_points
 
     @show_points.setter
@@ -149,16 +141,15 @@ class Hand:
             self.v_status = self.true_points
 
     def soft_hand_spot(self) -> None:
-        if self.true_points > 21:
+        while self.true_points > 21:
             for card in self.in_hand_cards:
                 if card.cost == 11:
                     print("Soft hand spotted!")
                     card.cost = 1
                     print(f"{card.name} now costs 1 point")
                     self.calculate_points()
-                    break
-
-    # v_statuts
+            else:
+                break
 
     @property
     def moved(self):

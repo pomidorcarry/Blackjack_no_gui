@@ -15,6 +15,7 @@ class Dealer(AbstractPlayer):
         if drawn := deck.draw_from_deck():
             drawn.face_down = face_down
             self.hand.append(drawn)
+
         self.hand.calculate_points()
         self.hand.set_v_status()
 
@@ -25,6 +26,7 @@ class Dealer(AbstractPlayer):
         print(f"total points are {self.hand.true_points}")
         time.sleep(1.5)
         self.show_hand(self.hand)
+        
         if self.hand.true_points < 17:
             while self.hand.true_points < 17:
                 print("dealer takes a card")

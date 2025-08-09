@@ -49,6 +49,7 @@ def main():
         game_0.check_v_status()
         game_0.deal_with_winners()
         time.sleep(3)
+        
         if game_0.reset():
             continue
         else:

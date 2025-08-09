@@ -38,8 +38,7 @@ class AbstractPlayer(ABC):
         if hand.v_status == "BUST":
             print("Busted, you can't take any more cards")
             return
-        # elif len(self.hands) > 1 and hand[0].rank == "Ace":
-        #     print("Only one draw possible after splitting aces")
+
         elif drawn := deck.draw_from_deck():
             drawn.face_down = face_down
             hand.append(drawn)
@@ -49,6 +48,7 @@ class AbstractPlayer(ABC):
         """shows hand of the player or dealer and shows or hides hidden cards"""
         if not hand:
             print("Your hand is empty")
+
         elif hand.is_dealers:
             print("==========")
             print("Dealer's hand\n========")
@@ -58,6 +58,7 @@ class AbstractPlayer(ABC):
                 elif card.face_down == False:
                     print(f"    🃏{card}")
             print("==========\n")
+            
         else:
             print(f"{self.name}'s current hand is:\n")
             for card in hand:

@@ -100,12 +100,16 @@ class Hand:
     def calculate_points(self) -> None:
         show_points = 0
         true_points = 0
+
         for card in self.in_hand_cards:
+
             if card.face_down:
                 true_points += card.cost
+
             else:
                 true_points += card.cost
                 show_points += card.cost
+
         self.true_points = true_points
         self.show_points = show_points
 
@@ -132,10 +136,13 @@ class Hand:
     def set_v_status(self) -> None:
         """setting victory status\nBSUT,NaturalBlackJack or amount of points scored"""
         self.soft_hand_spot()
+
         if self.true_points > 21:
             self.v_status = "BUST"
+
         elif self.true_points == 21 and len(self.in_hand_cards) == 2:
             self.v_status = "NaturalBlackJack"
+            
         else:
             self.v_status = self.true_points
 

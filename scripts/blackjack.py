@@ -73,8 +73,10 @@ class BlackJack:
         right now only one hand is possible with 0 cards
         """
         for player in self.players:
+
             for _ in range(2):
                 player.take_card(self.deck, hand=player.hands[0], face_down=False)
+
         self.dealer.take_card(self.deck, face_down=True)
         self.dealer.take_card(self.deck, face_down=False)
 
@@ -136,9 +138,11 @@ class BlackJack:
             return False
 
     def insurance_result(self, player: Player):
+
         if self.dealer.hand.v_status == "NaturalBlackJack":
             print("Insurance pays\n")
             player.hands[0].coefficient = 0.0
+
         elif self.dealer.hand.v_status != "NaturalBlackJack":
             player.cash -= player.hands[0].bet / 2
             print(
@@ -183,10 +187,11 @@ class BlackJack:
                 for hand in player.hands:
                     if not hand.coefficient:
                         hand.coefficient = 1.0
-        # else:
+
         elif self.dealer.hand.v_status != "NaturalBlackJack":
             for player in self.players:
                 for hand in player.hands:
+
                     if isinstance(hand.coefficient, float):
                         return
                     elif hand.v_status == "BUST":
@@ -228,6 +233,7 @@ class BlackJack:
             print("Understood!Bye!")
             sys.exit()
         if answer.lower() == "y":
+
             players_ = []
             for player in self.players:
                 name_ = player.name
@@ -237,6 +243,7 @@ class BlackJack:
             dealer_name = self.dealer.name
 
             deck_used = self.deck
+            
             self.__init__(
                 players=players_,
                 dealer=Dealer(name=dealer_name),

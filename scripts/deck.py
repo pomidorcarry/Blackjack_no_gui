@@ -55,11 +55,13 @@ class Deck_classic_52(Deck):
         return self.__existing_cards[key]
 
     def fill_existing(self) -> None:
-        # adding all numbered cards and face cards to the deck
+        """adding all numbered cards and face cards to the deck"""
         for suit_i in Card.valid_suits:
+
             for name, c in Card.valid_ranks_face.items():
                 card_obj = Card(suit=suit_i, rank=name, cost=c)
                 self.__existing_cards[card_obj.name] = card_obj
+
             for name, c in Card.valid_ranks_digits.items():
                 card_obj = Card(suit=suit_i, rank=name, cost=c)
                 self.__existing_cards[card_obj.name] = card_obj
@@ -78,8 +80,8 @@ class Deck_classic_52(Deck):
         else:
             print(f"No cards in deck right now")
 
-    # how many cards are left and how many cards are still in
     def deck_info(self) -> str:
+        """how many cards are left and how many cards are still in"""
         total = self.__in_deck_cards_total_num
         inside = len(self.__in_deck_cards)
         return f"""=============\nOut of the total {total} cards,\n{inside} cards are still in the deck\n============="""

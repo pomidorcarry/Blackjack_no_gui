@@ -19,6 +19,7 @@ from blackjack.tests.test_hand import (
 def dealer_():
     return Dealer()
 
+
 def test_empty_dealer(dealer_: Dealer):
     assert dealer_.name == "blank"
     assert dealer_.cash == 0

@@ -25,8 +25,6 @@ class Hand:
 
     def __repr__(self):
         return f"Hand({self.in_hand_cards})"
-    
-    
 
     @property
     def in_hand_cards(self):
@@ -45,7 +43,7 @@ class Hand:
 
     @bet.setter
     def bet(self, bet: float):
-        if not isinstance(bet,float):
+        if not isinstance(bet, float):
             raise ValueError("Only float values for this property")
         elif not bet > 0:
             raise ValueError("Value should be greater than zero")
@@ -75,9 +73,9 @@ class Hand:
 
     @property
     def show_points(self):
-        '''
+        """
         these points are public and for show
-        '''
+        """
         return self.__show_points
 
     @show_points.setter
@@ -87,9 +85,9 @@ class Hand:
         else:
             self.__show_points = value
 
-    # these points are used for calculations and checks
     @property
     def true_points(self):
+        """these points are used for calculations and checks"""
         return self.__true_points
 
     @true_points.setter
@@ -132,6 +130,7 @@ class Hand:
             self.__v_status = value
 
     def set_v_status(self) -> None:
+        """setting victory status\nBSUT,NaturalBlackJack or amount of points scored"""
         self.soft_hand_spot()
         if self.true_points > 21:
             self.v_status = "BUST"
@@ -141,6 +140,7 @@ class Hand:
             self.v_status = self.true_points
 
     def soft_hand_spot(self) -> None:
+        """looking for an ace in the hand to lower it's cost"""
         while self.true_points > 21:
             for card in self.in_hand_cards:
                 if card.cost == 11:

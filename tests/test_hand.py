@@ -265,23 +265,44 @@ def test_moved_invalid(empty_hand: Hand, value):
     with pytest.raises(ValueError):
         empty_hand.v_status = value
 
+
 @mock.patch("blackjack.scripts.hand.Hand.calculate_points")
 def test_soft_hand_spot_called_on_22(mocker):
-    hand = Hand(in_hand_cards=[Card(rank="Ace",suit="Hearts",cost=11),Card(rank="King",suit="Hearts",cost=10)])
+    hand = Hand(
+        in_hand_cards=[
+            Card(rank="Ace", suit="Hearts", cost=11),
+            Card(rank="King", suit="Hearts", cost=10),
+        ]
+    )
     hand.true_points = 22
     hand.soft_hand_spot()
     mocker.assert_called_once()
 
+
 def test_soft_hand_spot_reduces_cost_one_ace():
-    hand = Hand(in_hand_cards=[Card(rank="Ace",suit="Hearts",cost=11),Card(rank="King",suit="Hearts",cost=10),Card(rank="King",suit="Hearts",cost=10)])
+    hand = Hand(
+        in_hand_cards=[
+            Card(rank="Ace", suit="Hearts", cost=11),
+            Card(rank="King", suit="Hearts", cost=10),
+            Card(rank="King", suit="Hearts", cost=10),
+        ]
+    )
     hand.calculate_points()
     assert hand.true_points == 31
     hand.soft_hand_spot()
     ace = hand.in_hand_cards[0]
     assert ace.cost == 1
 
+
 def test_soft_hand_spot_reduces_cost_two_aces():
-    hand = Hand(in_hand_cards=[Card(rank="Ace",suit="Hearts",cost=11),Card(rank="Ace",suit="Spades",cost=11),Card(rank="King",suit="Hearts",cost=10),Card(rank="King",suit="Hearts",cost=10)])
+    hand = Hand(
+        in_hand_cards=[
+            Card(rank="Ace", suit="Hearts", cost=11),
+            Card(rank="Ace", suit="Spades", cost=11),
+            Card(rank="King", suit="Hearts", cost=10),
+            Card(rank="King", suit="Hearts", cost=10),
+        ]
+    )
     hand.calculate_points()
     assert hand.true_points == 42
     hand.soft_hand_spot()

@@ -1,14 +1,29 @@
+import sys
+import os
+import time
+
+if getattr(sys, "frozen", False):
+    app_path = os.path.dirname(sys.executable)
+    sys.path.append(app_path)
+else:
+    app_path = os.path.dirname(os.path.abspath(__file__))
+
 from .deck import Deck_classic_52
 from .player import Player
 from .dealer import Dealer
 from .blackjack import BlackJack
 
-import time
 
 def main():
+    while True:
+        raw = BlackJack.get_name()
+        if BlackJack.validate_name(raw):
+            name_ = raw
+            break
+
     game_0 = BlackJack(
         players=[
-            Player(name="Zakhar", cash=1000),
+            Player(name=name_, cash=1000),
         ],
         deck=Deck_classic_52(),
         dealer=Dealer(name="The Dealer"),
@@ -24,8 +39,8 @@ def main():
         for c_player in game_0.players:
             for c_hand in c_player.hands:
                 if c_hand.coefficient == None:
-                    time.sleep(2)
                     print(game_0.deck.deck_info())
+                    time.sleep(1)
                     game_0.show_player_dealer_hands(player=c_player, hand=c_hand)
                     c_player.make_move(game_0.deck)
 

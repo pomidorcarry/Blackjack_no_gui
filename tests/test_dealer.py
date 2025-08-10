@@ -1,7 +1,7 @@
 import pytest
 
 from blackjack.scripts.dealer import Dealer
-from blackjack.scripts.deck import Deck_classic_52 as dck
+from blackjack.scripts.deck import DeckClassic52 as dck
 from blackjack.scripts.hand import Hand
 from blackjack.scripts.card import Card
 from blackjack.tests.test_hand import (

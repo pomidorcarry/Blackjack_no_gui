@@ -4,7 +4,7 @@ import unittest.mock as mock
 
 from blackjack.scripts.hand import Hand
 from blackjack.scripts.card import Card
-from blackjack.scripts.deck import Deck_classic_52
+from blackjack.scripts.deck import DeckClassic52
 
 
 ###fixtures
@@ -22,7 +22,7 @@ def hand_with_cards_0() -> dict:
         "hand": hand,
         "true_points_exp": 0,
         "show_points_exp": 0,
-        "v_status_exp": 0,
+        "victory_status_exp": 0,
     }
     return hand_fix
 
@@ -39,7 +39,7 @@ def hand_with_cards_1() -> dict:
         "hand": hand,
         "true_points_exp": 26,
         "show_points_exp": 26,
-        "v_status_exp": 16,
+        "victory_status_exp": 16,
     }
     return hand_fix
 
@@ -56,7 +56,7 @@ def hand_with_cards_2() -> dict:
         "hand": hand,
         "true_points_exp": 23,
         "show_points_exp": 23,
-        "v_status_exp": 13,
+        "victory_status_exp": 13,
     }
     return hand_fix
 
@@ -69,7 +69,7 @@ def hand_with_cards_3() -> dict:
         "hand": hand,
         "true_points_exp": 10,
         "show_points_exp": 10,
-        "v_status_exp": 10,
+        "victory_status_exp": 10,
     }
     return hand_fix
 
@@ -86,7 +86,7 @@ def hand_with_cards_4() -> dict:
         "hand": hand,
         "true_points_exp": 30,
         "show_points_exp": 10,
-        "v_status_exp": "BUST",
+        "victory_status_exp": "BUST",
     }
     return hand_fix
 
@@ -102,7 +102,7 @@ def hand_with_cards_5() -> dict:
         "hand": hand,
         "true_points_exp": 21,
         "show_points_exp": 21,
-        "v_status_exp": "NaturalBlackJack",
+        "victory_status_exp": "NaturalBlackJack",
     }
     return hand_fix
 
@@ -118,7 +118,7 @@ def hand_with_cards_6() -> dict:
         "hand": hand,
         "true_points_exp": 21,
         "show_points_exp": 11,
-        "v_status_exp": "NaturalBlackJack",
+        "victory_status_exp": "NaturalBlackJack",
     }
     return hand_fix
 
@@ -169,7 +169,7 @@ def test_coefficient_invalid(empty_hand: Hand, error):
         empty_hand.coefficient = error
 
 
-@pytest.mark.parametrize("error", [("ERROR"), ({}), (None), ([]), (Deck_classic_52)])
+@pytest.mark.parametrize("error", [("ERROR"), ({}), (None), ([]), (DeckClassic52)])
 def test_points_invalid(empty_hand: Hand, error):
     with pytest.raises(ValueError):
         empty_hand.coefficient = error
@@ -226,17 +226,17 @@ def test_calculate_points_property_called(fixture_hand, mocker, request):
 @pytest.mark.parametrize(
     "value", [("BUST"), ("NaturalBlackJack"), (10), (2), (0), (21), (24)]
 )
-def test_v_status_correct(empty_hand: Hand, value):
-    empty_hand.v_status = value
-    assert empty_hand.v_status == value
+def test_victory_status_correct(empty_hand: Hand, value):
+    empty_hand.victory_status = value
+    assert empty_hand.victory_status == value
 
 
 @pytest.mark.parametrize(
     "value", [("ERROR"), ("randomtest"), (-10), (-2), (-21), (-24), ([]), (None)]
 )
-def test_v_status_invalid(empty_hand: Hand, value):
+def test_victory_status_invalid(empty_hand: Hand, value):
     with pytest.raises(ValueError):
-        empty_hand.v_status = value
+        empty_hand.victory_status = value
 
 
 @pytest.mark.parametrize(
@@ -250,12 +250,12 @@ def test_v_status_invalid(empty_hand: Hand, value):
         ("hand_with_cards_5"),
     ],
 )
-def test_set_v_status_correct(fixture_hand, request):
+def test_set_victory_status_correct(fixture_hand, request):
     hand_whole = request.getfixturevalue(fixture_hand)
     hand: Hand = hand_whole["hand"]
     hand.calculate_points()
-    hand.set_v_status()
-    assert hand.v_status == hand_whole["v_status_exp"]
+    hand.set_victory_status()
+    assert hand.victory_status == hand_whole["victory_status_exp"]
 
 
 @pytest.mark.parametrize(
@@ -263,7 +263,7 @@ def test_set_v_status_correct(fixture_hand, request):
 )
 def test_moved_invalid(empty_hand: Hand, value):
     with pytest.raises(ValueError):
-        empty_hand.v_status = value
+        empty_hand.victory_status = value
 
 
 @mock.patch("blackjack.scripts.hand.Hand.calculate_points")

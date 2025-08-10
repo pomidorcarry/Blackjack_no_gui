@@ -1,7 +1,7 @@
 import pytest
 
 from blackjack.scripts.card import Card
-from blackjack.scripts.deck import Deck_classic_52
+from blackjack.scripts.deck import DeckClassic52
 
 
 @pytest.fixture
@@ -83,7 +83,7 @@ def test_comparison():
 
 def test_comparison_error():
     card1 = Card(rank="Two", cost=2, suit="Hearts", face_down=False)
-    deck = Deck_classic_52()
+    deck = DeckClassic52()
     a_number = 101
     with pytest.raises(ValueError):
         assert card1 < a_number

@@ -9,7 +9,7 @@ class Hand:
             self.in_hand_cards: list[Card] = in_hand_cards
         self.is_dealers = is_dealers
         self.moved = False
-        self.__v_status = None
+        self.__victory_status = None
         self.__coefficient = None
         self.__show_points = None
         self.__true_points = None
@@ -115,36 +115,36 @@ class Hand:
 
     ###points
     # v_statuts
-    possible_v_statuses = [
+    possible_victory_statuses = [
         "BUST",
         "NaturalBlackJack",
     ]
 
     @property
-    def v_status(self):
-        return self.__v_status
+    def victory_status(self):
+        return self.__victory_status
 
-    @v_status.setter
-    def v_status(self, value):
-        if not (value in Hand.possible_v_statuses or type(value) is int):
-            raise ValueError("Only allowed v_statuses")
+    @victory_status.setter
+    def victory_status(self, value):
+        if not (value in Hand.possible_victory_statuses or type(value) is int):
+            raise ValueError("Only allowed victory_statuses")
         elif type(value) is int and value < 0:
-            raise ValueError("Only allowed v_statuses")
+            raise ValueError("Only allowed victory_statuses")
         else:
-            self.__v_status = value
+            self.__victory_status = value
 
-    def set_v_status(self) -> None:
+    def set_victory_status(self) -> None:
         """setting victory status\nBSUT,NaturalBlackJack or amount of points scored"""
         self.soft_hand_spot()
 
         if self.true_points > 21:
-            self.v_status = "BUST"
+            self.victory_status = "BUST"
 
         elif self.true_points == 21 and len(self.in_hand_cards) == 2:
-            self.v_status = "NaturalBlackJack"
+            self.victory_status = "NaturalBlackJack"
             
         else:
-            self.v_status = self.true_points
+            self.victory_status = self.true_points
 
     def soft_hand_spot(self) -> None:
         """looking for an ace in the hand to lower it's cost"""

@@ -1,7 +1,7 @@
 import pytest
 import unittest.mock as mock
 from blackjack.scripts.abstract_player import AbstractPlayer as abs
-from blackjack.scripts.deck import Deck_classic_52 as dck
+from blackjack.scripts.deck import DeckClassic52 as dck
 from blackjack.scripts.card import Card
 
 
@@ -23,7 +23,7 @@ def test_cash_invalid(player_0, value):
         player_0.cash = value
 
 
-@mock.patch("blackjack.scripts.deck.Deck_classic_52.draw_from_deck")
+@mock.patch("blackjack.scripts.deck.DeckClassic52.draw_from_deck")
 def test_take_card_calls_draw_from_deck(mok, player_0: abs):
     mock_card = mock.MagicMock()
     mock_card.cost = 10

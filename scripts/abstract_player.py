@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from .deck import Deck
+from .deck import DeckClassic52
 from .hand import Hand
 
 
@@ -8,10 +8,10 @@ class AbstractPlayer(ABC):
         super().__init__()
         self.name = name
         self.__cash = cash
-        if hands == None:
-            self.hands: list[Hand] = [Hand()]
-        else:
+        if hands:
             self.hands: list[Hand] = hands
+        else:
+            self.hands = [Hand()]
 
     @property
     def cash(self):
@@ -27,15 +27,15 @@ class AbstractPlayer(ABC):
             self.__cash = float(value)
 
     @abstractmethod
-    def make_move(self):
+    def make_move(self,deck: DeckClassic52)->None:
         pass
 
-    def take_card(self, deck: Deck, hand: Hand, face_down=False) -> None:
+    def take_card(self, deck: DeckClassic52, hand: Hand, face_down=False) -> None:
         """
         draws card from chosen deck and appends to the hand\n
         calculates points for the hand
         """
-        if hand.v_status == "BUST":
+        if hand.victory_status == "BUST":
             print("Busted, you can't take any more cards")
             return
 
@@ -52,7 +52,7 @@ class AbstractPlayer(ABC):
         elif hand.is_dealers:
             print("==========")
             print("Dealer's hand\n========")
-            for card in hand:
+            for card in hand.in_hand_cards:
                 if card.face_down == True:
                     print(f"    🃏This card is face down")
                 elif card.face_down == False:
@@ -61,7 +61,7 @@ class AbstractPlayer(ABC):
             
         else:
             print(f"{self.name}'s current hand is:\n")
-            for card in hand:
+            for card in hand.in_hand_cards:
                 print(f"    🃏{card}")
             print("==========\n")
 

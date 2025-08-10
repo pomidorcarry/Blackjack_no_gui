@@ -2,13 +2,7 @@ import sys
 import os
 import time
 
-if getattr(sys, "frozen", False):
-    app_path = os.path.dirname(sys.executable)
-    sys.path.append(app_path)
-else:
-    app_path = os.path.dirname(os.path.abspath(__file__))
-
-from .deck import Deck_classic_52
+from .deck import DeckClassic52
 from .player import Player
 from .dealer import Dealer
 from .blackjack import BlackJack
@@ -25,7 +19,7 @@ def main():
         players=[
             Player(name=name_, cash=1000),
         ],
-        deck=Deck_classic_52(),
+        deck=DeckClassic52(),
         dealer=Dealer(name="The Dealer"),
     )
     while True:
@@ -46,9 +40,9 @@ def main():
 
         if game_0.dealer_should_play():
             game_0.dealer.make_move(game_0.deck)
-        game_0.check_v_status()
+        game_0.check_victory_status()
         game_0.deal_with_winners()
-        time.sleep(3)
+        time.sleep(2)
         
         if game_0.reset():
             continue

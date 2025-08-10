@@ -1,15 +1,15 @@
 import pytest
 import unittest.mock as mock
 
-from blackjack.scripts.deck import Deck_classic_52
+from blackjack.scripts.deck import DeckClassic52
 from blackjack.scripts.abstract_player import AbstractPlayer as abs
 from blackjack.scripts.card import Card
 
 
 @pytest.fixture
 def my_deck():
-    Deck_classic_52().__abstractmethods__ = set()
-    return Deck_classic_52()
+    DeckClassic52().__abstractmethods__ = set()
+    return DeckClassic52()
 
 
 def test_correct_init(my_deck):

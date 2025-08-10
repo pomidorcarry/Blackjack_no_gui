@@ -21,7 +21,7 @@ class Deck(ABC):
         pass
 
 
-class Deck_classic_52(Deck):
+class DeckClassic52(Deck):
     def __init__(self):
         self.__existing_cards = {}
         self.fill_existing()

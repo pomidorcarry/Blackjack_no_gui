@@ -3,7 +3,7 @@ import re
 import time
 
 from .abstract_player import AbstractPlayer
-from .deck import Deck
+from .deck import DeckClassic52
 from .hand import Hand
 
 
@@ -11,15 +11,22 @@ class Player(AbstractPlayer):
     def __init__(self, name="blank", cash=0):
         super().__init__(name, cash)
 
-    def take_card(self, deck: Deck, hand: Hand, face_down=False):
+    def take_card(self, deck: DeckClassic52, hand: Hand, face_down=False)->None:
         """
         draws card from chosen deck and appends to the hand\n
         calculates points for the hand\n
-        sets v_status for the hand\n
+        sets victory_status for the hand\n
         optionaly checks for a pair and sets
+
+        :param deck: From what deck the card will be drawn from
+        :type deck: DeckClassic52
+        :param hand: To which hand the card will be added
+        :type hand: Hand
+        :param face_down: Wether the card will be drawn face up or down
+        :type face_down: bool
         """
         super().take_card(deck, hand, face_down)
-        hand.set_v_status()
+        hand.set_victory_status()
 
     def get_bet(self) -> str:
         """input method\ngetting the bet"""
@@ -31,8 +38,13 @@ class Player(AbstractPlayer):
             raw = "1.0"
         return raw
 
-    def validate_bet(self, raw) -> float:
-        """checking if the bet is in the correct format"""
+    def validate_bet(self, raw:str) -> float:
+        """
+        checking if the bet is in the correct format
+        
+        :param raw: the raw bet string to validate
+        :type raw: str
+        """
 
         if not re.fullmatch(r"\d+\.\d{2}", raw):
             print("Please input in a format of 100.00")
@@ -46,7 +58,12 @@ class Player(AbstractPlayer):
         return bet
 
     def place_bet(self, hand: Hand) -> None:
-        """setting validated bet in the bet attribute"""
+        """
+        setting validated bet in the bet attribute
+        
+        :param hand: for which hand to bet
+        :type hand: Hand
+        """
         print(f"{self.name} has got {self.cash} $")
         while True:
 
@@ -58,7 +75,7 @@ class Player(AbstractPlayer):
                 print(f"Bet placed as {bet:.2f}")
                 break
 
-    def make_move(self, deck: Deck) -> None:
+    def make_move(self, deck: DeckClassic52) -> None:
         """core gameplay method\nchecks if user got a pair\nprints options\nendless loop letting the player play\n until he either quits the game or end the round"""
         
         options = {
@@ -146,19 +163,26 @@ class Player(AbstractPlayer):
             sys.exit()
         return raw_choice
 
-    def make_move_validate_input(self, choice, options) -> int:
-        """validating player's choice"""
+    def make_move_validate_input(self, choice:str, options:dict) -> int:
+        """
+        validating player's choice
+        
+        :param choice: raw input in player's move
+        :type choice: str
+        :param options: a dictionary containing possible move options
+        :type options: dict 
+        """
         try:
             choice = int(choice)
         except ValueError:
             print("Only integers")
-            return None
+            return 0
         if not choice in options.keys():
             print("Only numbers from the list")
-            return None
+            return 0
         return choice
 
-    def check_pair(self, deck_) -> None:
+    def check_pair(self, deck_:DeckClassic52) -> None:
         """Chek's if there is a pair in the given hand and calls split"""
 
         if len(self.hands) > 1:
@@ -196,8 +220,10 @@ class Player(AbstractPlayer):
             return False
         if answer.lower() == "y":
             return True
+        else:
+            return False
 
-    def split_hand(self, deck_) -> None:
+    def split_hand(self, deck_:DeckClassic52) -> None:
         """splits hand in two\nplacing equal bet on the second hand\ntakes one card in each hand\n"""
         inital_bet = self.hands[0].bet
         card1, card2 = self.hands[0][0], self.hands[0][1]

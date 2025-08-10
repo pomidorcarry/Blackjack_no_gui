@@ -1,7 +1,7 @@
 import pytest
 import unittest.mock as mock
 from blackjack.scripts.player import Player
-from blackjack.scripts.deck import Deck_classic_52 as dck
+from blackjack.scripts.deck import DeckClassic52 as dck
 from blackjack.scripts.hand import Hand
 from blackjack.scripts.card import Card
 from blackjack.tests.test_hand import (
@@ -46,12 +46,12 @@ def test_take_card_grows_hand(player_: Player):
         ("hand_with_cards_6"),
     ],
 )
-def test_take_card_calls_v_status(mocker, player_: Player, fixture_hand: Hand, request):
-    mock_set_v_status = mocker.patch("blackjack.scripts.hand.Hand.set_v_status")
+def test_take_card_calls_victory_status(mocker, player_: Player, fixture_hand: Hand, request):
+    mock_set_victory_status = mocker.patch("blackjack.scripts.hand.Hand.set_victory_status")
     hand_whole = request.getfixturevalue(fixture_hand)
     test_hand: Hand = hand_whole["hand"]
     player_.take_card(deck=dck(), hand=test_hand)
-    mock_set_v_status.assert_called_once()
+    mock_set_victory_status.assert_called_once()
 
 
 @pytest.mark.parametrize(
@@ -66,13 +66,13 @@ def test_take_card_calls_v_status(mocker, player_: Player, fixture_hand: Hand, r
         ("hand_with_cards_6"),
     ],
 )
-def test_take_card_correct_v_status(
+def test_take_card_correct_victory_status(
     mocker, player_: Player, fixture_hand: Hand, request
 ):
     # we replace the card drawn from the deck with a mock card costing zero points
     # to test that with cards in hand the v status will be expected value
     mock_draw_from_deck = mocker.patch(
-        "blackjack.scripts.deck.Deck_classic_52.draw_from_deck"
+        "blackjack.scripts.deck.DeckClassic52.draw_from_deck"
     )
     mock_draw_from_deck.return_value = None
     # get the hand fixture and set it as the hand of the player
@@ -80,8 +80,8 @@ def test_take_card_correct_v_status(
     test_hand: Hand = hand_whole["hand"]
     player_.hands = [test_hand]
     player_.take_card(deck=dck(), hand=player_.hands[0])
-    # check that after player draws the card his v_status is correct
-    assert player_.hands[0].v_status == hand_whole["v_status_exp"]
+    # check that after player draws the card his victory_status is correct
+    assert player_.hands[0].victory_status == hand_whole["victory_status_exp"]
 
 
 @pytest.mark.parametrize("value", [("100.00"), ("99999.99"), ("0.00")])
